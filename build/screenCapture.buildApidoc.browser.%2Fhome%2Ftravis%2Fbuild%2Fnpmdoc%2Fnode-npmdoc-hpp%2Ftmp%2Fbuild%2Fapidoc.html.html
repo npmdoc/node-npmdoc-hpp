@@ -54,12 +54,190 @@
 
     <li class="apidocModuleLi"><a href="#apidoc.module.hpp">module hpp</a><ol>
 
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.hpp.hpp">
+            function <span class="apidocSignatureSpan"></span>hpp
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.hpp.toString">
+            function <span class="apidocSignatureSpan">hpp.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
     </ol></li>
 
 </ol></div>
 
 <div class="apidocSectionDiv">
 <h1><a href="#apidoc.module.hpp" id="apidoc.module.hpp">module hpp</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.hpp.hpp" id="apidoc.element.hpp.hpp">
+        function <span class="apidocSignatureSpan"></span>hpp
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">hpp = function (options) {
+
+    options = defaults(options || {}, {
+        checkQuery: true,
+        checkBody: true,
+        checkBodyOnlyForContentType: 'urlencoded',
+        whitelist: null
+    });
+
+    if (isString(options.whitelist)) {
+        options.whitelist = [ options.whitelist ];
+    }
+
+    if (options.whitelist !== null &amp;&amp; !isArray(options.whitelist)) {
+        console.error(
+            '[HPP] ' +
+            'Please pass either a string or an array to "options.whitelist". ' +
+            'Deactivated the whitelist!'
+        );
+        options.whitelist = null;
+    }
+
+    if (isArray(options.whitelist)) {
+
+        options.whitelist = options.whitelist.filter(function (elem) {
+
+            if (!isString(elem)) {
+
+                console.error(
+                    '[HPP] ' +
+                    'Please pass only strings into the "options.whitelist" array. ' +
+                    'Removed the entry &lt;' + elem + '&gt;!'
+                );
+
+                return false;
+            }
+
+            return true;
+
+        });
+
+    }
+
+<span class="apidocCodeCommentSpan">    /**
+     * @private
+     * @param {object} req
+     * @return {boolean}
+     */
+</span>    function _correctContentType(req) {
+        return typeis(req, options.checkBodyOnlyForContentType);
+    }
+
+    /**
+     * @private
+     * @param {string} keyReqPart e.g 'body' or 'query'
+     * @param {string} keyPolluted e.g 'bodyPolluted' or 'queryPolluted'
+     * @param {object} req
+     */
+    function _putAside(keyReqPart, keyPolluted, req) {
+
+        var whitelist = options.whitelist;
+
+        var reqPart = req[keyReqPart];
+        var reqPolluted = req[keyPolluted];
+
+        // Put aside only once in case multiple HPP middlewares are used
+        if (reqPolluted === undefined) { // Check identical to lodash's isUndefined(reqPolluted)
+
+            reqPolluted = req[keyPolluted] = {};
+
+            var parameters = Object.keys(reqPart);
+
+            for ( var i = 0, parametersLen = parameters.length; i &lt; parametersLen; i+=1 ) {
+
+                var paramKey = parameters[i];
+                var paramValue = reqPart[paramKey];
+
+                if (!isArray(paramValue)) {
+                    continue;
+                }
+
+                // Put aside
+                reqPolluted[paramKey] = paramValue;
+                // Select the first parameter value
+                reqPart[paramKey] = paramValue[paramValue.length-1];
+
+            }
+
+        }
+
+        // Processed separately to allow multiple whitelists from multiple HPP middlewares as well as
+        // for performance reasons
+        if (whitelist !== null) { // Validation at top ensures whitelist is either null or an array
+
+            for (var k = 0, whitelistLen = whitelist.length; k &lt; whitelistLen; k += 1) {
+
+                var whitelistedParam = whitelist[k];
+
+                if (reqPolluted[whitelistedParam]) {
+                    // Put back
+                    reqPart[whitelistedParam] = reqPolluted[whitelistedParam];
+                    delete reqPolluted[whitelistedParam];
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * @public
+     * @param {object} req
+     * @param {object} [req.query]
+     * @param {object} [req.body]
+     * @param {object} res
+     * @param {function} next
+     */
+    return function hpp(req, res, next) {
+
+        if (options.checkQuery &amp;&amp; req.query) {
+            _putAside('query', 'queryPolluted', req);
+        }
+
+        if (options.checkBody &amp;&amp; req.body &amp;&amp; _correctContentType(req)) {
+            _putAside('body', 'bodyPolluted', req);
+        }
+
+        next();
+
+    };
+
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.hpp.toString" id="apidoc.element.hpp.toString">
+        function <span class="apidocSignatureSpan">hpp.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return toString;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
 
 </div>
 
