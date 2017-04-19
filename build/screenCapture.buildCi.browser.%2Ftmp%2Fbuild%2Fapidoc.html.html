@@ -1,4 +1,4 @@
-<div class="apidocDiv">
+<html><head></head><body><div class="apidocDiv">
 <style>
 /*csslint
 */
@@ -47,17 +47,10 @@
 }
 </style>
 <h1>api documentation for
-    <a
-
-        href="https://github.com/analog-nico/hpp"
-
-    >hpp (v0.2.2)</a>
+    <a href="https://github.com/analog-nico/hpp">hpp (v0.2.2)</a>
 </h1>
 <h4>Express middleware to protect against HTTP Parameter Pollution attacks</h4>
-<div class="apidocSectionDiv"><a
-    href="#apidoc.tableOfContents"
-    id="apidoc.tableOfContents"
-><h1>table of contents</h1></a><ol>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.hpp">module hpp</a><ol>
 
@@ -90,7 +83,7 @@
     options = defaults(options || {}, {
         checkQuery: true,
         checkBody: true,
-        checkBodyOnlyForContentType: &#x27;urlencoded&#x27;,
+        checkBodyOnlyForContentType: 'urlencoded',
         whitelist: null
     });
 
@@ -98,11 +91,11 @@
         options.whitelist = [ options.whitelist ];
     }
 
-    if (options.whitelist !== null &#x26;&#x26; !isArray(options.whitelist)) {
+    if (options.whitelist !== null &amp;&amp; !isArray(options.whitelist)) {
         console.error(
-            &#x27;[HPP] &#x27; +
-            &#x27;Please pass either a string or an array to &#x22;options.whitelist&#x22;. &#x27; +
-            &#x27;Deactivated the whitelist!&#x27;
+            '[HPP] ' +
+            'Please pass either a string or an array to "options.whitelist". ' +
+            'Deactivated the whitelist!'
         );
         options.whitelist = null;
     }
@@ -114,9 +107,9 @@
             if (!isString(elem)) {
 
                 console.error(
-                    &#x27;[HPP] &#x27; +
-                    &#x27;Please pass only strings into the &#x22;options.whitelist&#x22; array. &#x27; +
-                    &#x27;Removed the entry &#x3c;&#x27; + elem + &#x27;&#x3e;!&#x27;
+                    '[HPP] ' +
+                    'Please pass only strings into the "options.whitelist" array. ' +
+                    'Removed the entry &lt;' + elem + '&gt;!'
                 );
 
                 return false;
@@ -139,8 +132,8 @@
 
     /**
      * @private
-     * @param {string} keyReqPart e.g &#x27;body&#x27; or &#x27;query&#x27;
-     * @param {string} keyPolluted e.g &#x27;bodyPolluted&#x27; or &#x27;queryPolluted&#x27;
+     * @param {string} keyReqPart e.g 'body' or 'query'
+     * @param {string} keyPolluted e.g 'bodyPolluted' or 'queryPolluted'
      * @param {object} req
      */
     function _putAside(keyReqPart, keyPolluted, req) {
@@ -151,13 +144,13 @@
         var reqPolluted = req[keyPolluted];
 
         // Put aside only once in case multiple HPP middlewares are used
-        if (reqPolluted === undefined) { // Check identical to lodash&#x27;s isUndefined(reqPolluted)
+        if (reqPolluted === undefined) { // Check identical to lodash's isUndefined(reqPolluted)
 
             reqPolluted = req[keyPolluted] = {};
 
             var parameters = Object.keys(reqPart);
 
-            for ( var i = 0, parametersLen = parameters.length; i &#x3c; parametersLen; i+=1 ) {
+            for ( var i = 0, parametersLen = parameters.length; i &lt; parametersLen; i+=1 ) {
 
                 var paramKey = parameters[i];
                 var paramValue = reqPart[paramKey];
@@ -179,7 +172,7 @@
         // for performance reasons
         if (whitelist !== null) { // Validation at top ensures whitelist is either null or an array
 
-            for (var k = 0, whitelistLen = whitelist.length; k &#x3c; whitelistLen; k += 1) {
+            for (var k = 0, whitelistLen = whitelist.length; k &lt; whitelistLen; k += 1) {
 
                 var whitelistedParam = whitelist[k];
 
@@ -205,12 +198,12 @@
      */
     return function hpp(req, res, next) {
 
-        if (options.checkQuery &#x26;&#x26; req.query) {
-            _putAside(&#x27;query&#x27;, &#x27;queryPolluted&#x27;, req);
+        if (options.checkQuery &amp;&amp; req.query) {
+            _putAside('query', 'queryPolluted', req);
         }
 
-        if (options.checkBody &#x26;&#x26; req.body &#x26;&#x26; _correctContentType(req)) {
-            _putAside(&#x27;body&#x27;, &#x27;bodyPolluted&#x27;, req);
+        if (options.checkBody &amp;&amp; req.body &amp;&amp; _correctContentType(req)) {
+            _putAside('body', 'bodyPolluted', req);
         }
 
         next();
@@ -230,3 +223,4 @@
     ]
 </div>
 </div>
+</body></html>
